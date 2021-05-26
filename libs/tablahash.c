@@ -2,7 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+/* Funciones elacionadas a los árboles */
+void arbol_destruir(Arbol arbol) {
+  if (arbol != NULL){
+    arbol_destruir(arbol->izq);
+    arbol_destruir(arbol->der);
+    free(arbol);
+  }
+}
 
 /* Crea una nueva tabla Hash vacía con la capacidad dada. */
 TablaHash *tablahash_crear(unsigned capacidad, FuncionHash hash, FuncionHash hash2) {
@@ -98,7 +105,7 @@ void tablahash_eliminar(TablaHash *tabla, char *clave) {
     else if (strcmp(tabla->tabla[idx].clave, clave) == 0) {
       // Si estaba, eliminamos y marcamos como eliminado el casillero
       free(tabla->tabla[idx].clave);
-      // itree_destruir(tabla->tabla[idx].dato);
+      arbol_destruir(tabla->tabla[idx].dato);
       tabla->tabla[idx].estado = 2;
       // Disminuimos el nro de elementos 
       tabla->numElems--;
@@ -130,6 +137,7 @@ TablaHash *tablahash_agrandar(TablaHash *tabla) {
 /* Destruye la tabla. */
 void tablahash_destruir(TablaHash *tabla) {
   for (unsigned int i = 0; i < tabla->capacidad; i++) {
+    arbol_destruir(tabla->tabla[i].dato); // trabaja con NULL también
     if (tabla->tabla[i].estado != 2)
       free(tabla->tabla[i].clave);
   }

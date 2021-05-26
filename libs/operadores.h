@@ -13,13 +13,16 @@ typedef struct _NodoTablaOps {
 } NodoTablaOps;
 
 typedef struct _TablaOps {
-    NodoTablaOps* head;
+    NodoTablaOps** array;
     int cant;
+    int num_elementos;
 } TablaOps;
 
 TablaOps* crear_tabla();
 
 void cargar_operador(TablaOps* tabla, char* simbolo, int aridad, FuncionEvaluacion eval);
+
+void agrandar_tablaops (TablaOps* tabla);
 
 int suma (int* args);
 int resta (int* args);
