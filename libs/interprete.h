@@ -9,7 +9,23 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer);
 
 TablaHash* crear_dicc_alias();
 
-Arbol crear_expr_tree(char* expr); // ver https://www.geeksforgeeks.org/expression-tree/
+Arbol crear_expr_tree(char* expr, TablaOps* tabla); // ver https://www.geeksforgeeks.org/expression-tree/
+
+/* Para la implementación de crear_expr_tree necesitaremos una pila */
+// Estructura de un nodo perteneciente a una pila. 
+// Implementación con listas simplemente enlazadas.
+typedef struct _StackNode { 
+  Arbol t; 
+  struct _StackNode* next; 
+} StackNode;
+
+void destruir_stack(StackNode* top);
+
+void push(StackNode** top_ref, Arbol t); 
+
+Arbol pop(StackNode** top_ref); 
+
+int is_empty(StackNode* top);
 
 void agregar_alias(TablaHash* dicc);
 

@@ -13,6 +13,8 @@ typedef struct _NodoArbol {
 
 typedef NodoArbol* Arbol;
 
+Arbol crear_nodo(char* dato);
+
 /**
  * Tipo de las funciones hash a ser consideradas por las tablas hash.
  */

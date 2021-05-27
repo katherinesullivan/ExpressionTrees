@@ -3,11 +3,19 @@
 #include <string.h>
 
 /* Funciones elacionadas a los árboles */
+Arbol crear_nodo(char* dato) {
+  Arbol arbol = malloc(sizeof(Arbol));
+  arbol->dato = dato;
+  arbol->der = NULL;
+  arbol->izq = NULL;
+  return arbol;
+}
+
 void arbol_destruir(Arbol arbol) {
   if (arbol != NULL){
     arbol_destruir(arbol->izq);
     arbol_destruir(arbol->der);
-    free(arbol->dato);
+    free(arbol->dato); // aca problema
     free(arbol);
   }
 }
@@ -138,10 +146,12 @@ TablaHash *tablahash_agrandar(TablaHash *tabla) {
 /* Destruye la tabla. */
 void tablahash_destruir(TablaHash *tabla) {
   for (unsigned int i = 0; i < tabla->capacidad; i++) {
+    printf("%d\n", i);
     arbol_destruir(tabla->tabla[i].dato); // trabaja con NULL también
     if (tabla->tabla[i].estado != 2)
       free(tabla->tabla[i].clave);
   }
+  printf("Pude freear las claves\n");
   free(tabla->tabla);
   free(tabla);
 }
