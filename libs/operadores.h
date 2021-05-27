@@ -24,6 +24,8 @@ void cargar_operador(TablaOps* tabla, char* simbolo, int aridad, FuncionEvaluaci
 
 void agrandar_tablaops (TablaOps* tabla);
 
+void destruir_tablaops (TablaOps* tabla);
+
 int suma (int* args);
 int resta (int* args);
 int opuesto (int* args);

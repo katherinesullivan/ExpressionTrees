@@ -88,7 +88,7 @@ void destruir_tablaops (TablaOps* tabla) {
     free(tabla);
 }
 
-int main () {
+/*int main () {
     printf("%%%%\n"); // 2 %
     char* c = malloc(sizeof(char)*3);
     scanf("%s", c);
@@ -103,4 +103,4 @@ int main () {
     printf("Dos^Tres: %d\n", 2^3);
     destruir_tablaops(tabla);
     return 0;
-}
+}*/

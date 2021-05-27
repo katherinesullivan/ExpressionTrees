@@ -7,6 +7,7 @@ void arbol_destruir(Arbol arbol) {
   if (arbol != NULL){
     arbol_destruir(arbol->izq);
     arbol_destruir(arbol->der);
+    free(arbol->dato);
     free(arbol);
   }
 }
