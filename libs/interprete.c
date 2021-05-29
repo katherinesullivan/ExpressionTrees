@@ -154,6 +154,7 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                     return NULL;
                 }
                 t->der = t1;
+                t->izq = NULL;
                 push(&stack, t);
             }
         }
@@ -161,8 +162,8 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
         else {
             int bandera = 0;
             int j = 0;
+            char* simbolo = malloc(sizeof(char)*2);
             while(!bandera && j < tabla->num_elementos) {
-                char* simbolo = malloc(sizeof(char)*2);
                 sscanf(expr+i, "%c", simbolo);
                 simbolo[1] = '\0';
                 printf("Simbolo: %s\n", simbolo);
@@ -181,8 +182,8 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                         destruir_stack(stack);
                         return NULL;
                     }
-                    t->izq = t1;
-                    t->der = t2;
+                    t->der = t1;
+                    t->izq = t2;
                     push(&stack, t);
                     bandera = 1;
                 }
@@ -191,10 +192,11 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
 
             // Si no se trataba de un operador, se trata de un operando
             if (!bandera) {
+                free(simbolo);
                 char* operando = malloc(sizeof(char)*10);
                 if (sscanf(expr+i, "%s", operando) == 1) {
                     i+=strlen(operando);
-                    printf("Length del operando: %d\n", strlen(operando));
+                    printf("Length del operando: %ld\n", strlen(operando));
                     t = crear_nodo(operando);
                     push(&stack, t);
                 }
@@ -205,12 +207,14 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                     return NULL;
                 }
             }
-
-
         }
     }
+
     // Creo que queda vacia con esto la stack pero habría que ver
     t = pop(&stack);
+    printf("-----Inorder tree traversal:-----\n");
+    arbol_imprimir_inorder(t);
+    printf("---------------------------------\n");
     return t;
 }
 
@@ -238,6 +242,7 @@ unsigned hash2(char *s) {
 int main() {
     int flag = 1;
     free(NULL);
+    printf("Size of arbol: %ld\n", sizeof(Arbol));
     puts("hi!");
     char* buffer = malloc(sizeof(char)*MAX_INPUT);
     TablaHash* diccionario = tablahash_crear(31, hash, &hash2);

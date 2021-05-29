@@ -15,6 +15,10 @@ typedef NodoArbol* Arbol;
 
 Arbol crear_nodo(char* dato);
 
+void arbol_imprimir_inorder(Arbol arbol);
+
+void arbol_destruir(Arbol arbol);
+
 /**
  * Tipo de las funciones hash a ser consideradas por las tablas hash.
  */

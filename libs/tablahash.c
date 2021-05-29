@@ -4,7 +4,8 @@
 
 /* Funciones elacionadas a los árboles */
 Arbol crear_nodo(char* dato) {
-  Arbol arbol = malloc(sizeof(Arbol));
+  Arbol arbol = malloc(sizeof(NodoArbol));
+
   arbol->dato = dato;
   arbol->der = NULL;
   arbol->izq = NULL;
@@ -12,12 +13,22 @@ Arbol crear_nodo(char* dato) {
 }
 
 void arbol_destruir(Arbol arbol) {
+  // might be uninitialised the one i'm passing
   if (arbol != NULL){
     arbol_destruir(arbol->izq);
     arbol_destruir(arbol->der);
     free(arbol->dato); // aca problema
     free(arbol);
   }
+
+}
+
+void arbol_imprimir_inorder(Arbol arbol) {
+  if (arbol == NULL) return;
+
+  arbol_imprimir_inorder(arbol->izq);
+  printf("%s\n", arbol->dato);
+  arbol_imprimir_inorder(arbol->der);
 }
 
 /* Crea una nueva tabla Hash vacía con la capacidad dada. */
