@@ -42,7 +42,7 @@ int resta (int* args) {
     return args[0] - args[1];
 }
 int opuesto (int* args) {
-    return -args[0];
+    return 0-args[0];
 }
 int producto (int* args){
     return args[0]*args[1];

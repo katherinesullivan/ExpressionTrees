@@ -48,7 +48,10 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
         char* alias = malloc(sizeof(char)*MAX_ALIAS);
         if (chequeo_formato(sscanf(buffer+strlen(primera_palabra), "%s", alias), 1)) {
             Arbol arbol = tablahash_buscar(*dicc, alias, 0);
-            if (arbol) resolver(arbol);
+            if (arbol) {
+                resolver(arbol, tabla);
+                printf("La expresión evalúa a %d\n", resolver(arbol, tabla));
+            }
             else printf("No existe expresión para resolver con ese alias\n");
         }
         printf("%s\n", alias);
@@ -170,20 +173,23 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                 // Estamos en el caso de un operador
                 if (!strcmp(simbolo, tabla->array[j]->simbolo)) {
                     t = crear_nodo(simbolo);
+                    int aridad2 = (tabla->array[j]->aridad)-1; 
                     if (!is_empty(stack))t1 = pop(&stack);
                     else {
                         printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
                         destruir_stack(stack);
                         return NULL;
                     }
-                    if (!is_empty(stack))t2 = pop(&stack);
-                    else {
-                        printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
-                        destruir_stack(stack);
-                        return NULL;
+                    if (aridad2) {
+                        if (!is_empty(stack))t2 = pop(&stack);
+                        else {
+                            printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
+                            destruir_stack(stack);
+                            return NULL;
+                        }
+                        t->izq = t2;
                     }
                     t->der = t1;
-                    t->izq = t2;
                     push(&stack, t);
                     bandera = 1;
                 }
@@ -221,8 +227,43 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
 void printf_infix(Arbol arbol) {
     return;
 }
-void resolver(Arbol arbol) {
-    return;
+
+int resolver(Arbol arbol, TablaOps* tabla) {
+    // Árbol vacío  
+    if (!arbol) return 0;
+
+    // Hoja 
+    if ((!arbol->izq) && (!arbol->der)) return atoi(arbol->dato);
+
+    // Caso operador 
+    int valor_izq = resolver(arbol->izq, tabla);
+    int valor_der = resolver(arbol->der, tabla);
+    int* args = malloc(sizeof(int)*2);
+
+    int i = 0;
+    while(i<tabla->num_elementos) {
+        if (!strcmp(arbol->dato, tabla->array[i]->simbolo)) {
+            if (tabla->array[i]->aridad == 1) {
+                args[0] = valor_der;
+                args[1] = valor_izq; // no va a ser usado 0
+                int rdo = tabla->array[i]->eval(args);
+                free(args);
+                return rdo;
+            }
+            args[0] = valor_izq;
+            args[1] = valor_der;
+            int rdo = tabla->array[i]->eval(args);
+            free(args);
+            return rdo;
+        }
+        i++;
+    }
+
+    // No se encontró el símbolo
+    free(args);
+    printf("Hubo un problema evaluando su expresión. Fijése haberla definido de manera correcta y de haber cargado todos los operadores correspondientes\n");
+
+    return 0;
 }
 
 unsigned hash(char *s) {

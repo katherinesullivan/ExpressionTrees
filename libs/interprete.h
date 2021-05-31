@@ -31,7 +31,7 @@ void agregar_alias(TablaHash* dicc);
 
 void printf_infix(Arbol arbol); // tener en cuenta parentesis (van a ser segun el nivel y si son + -)
 
-void resolver(Arbol arbol);
+int resolver(Arbol arbol, TablaOps* tabla);
 
 /* Una vez ingresada la palabra salir, se libera la memoria asignada a la tabla de operaciones y
  al diccionario de arboles de expresiones*/
