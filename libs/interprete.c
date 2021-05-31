@@ -7,7 +7,7 @@
 #define MAX_ALIAS 32
 
 int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
-    printf(">");
+    printf("> ");
     buffer[0] = '\0';
     fgets(buffer, MAX_INPUT, stdin);
     buffer[strlen(buffer)] = '\0';
@@ -71,6 +71,9 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
         printf("Todo piola por aca\n");
         Arbol arbol = crear_expr_tree(expr, tabla);
         tablahash_insertar(*dicc, primera_palabra, arbol);
+    }
+    else {
+        free(primera_palabra);
     }
     free(expr);
 
@@ -141,9 +144,9 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
 
         if (expr[i] == ' ') {printf("Hola soy un espacio\n");}
 
-        // Caso distinguido operador especial --
-        else if (expr[i] == '-') {
-            if (expr[i+1] == '-') {
+        else {
+            if (expr[i] == '-' && expr[i+1] == '-') {
+                // Caso distinguido operador especial --
                 i++; // para no leer el prox caracter
                 char* dato = malloc(sizeof(char)*3);
                 dato[0] = '-';
@@ -160,57 +163,57 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                 t->izq = NULL;
                 push(&stack, t);
             }
-        }
 
-        else {
-            int bandera = 0;
-            int j = 0;
-            char* simbolo = malloc(sizeof(char)*2);
-            while(!bandera && j < tabla->num_elementos) {
-                sscanf(expr+i, "%c", simbolo);
-                simbolo[1] = '\0';
-                printf("Simbolo: %s\n", simbolo);
-                // Estamos en el caso de un operador
-                if (!strcmp(simbolo, tabla->array[j]->simbolo)) {
-                    t = crear_nodo(simbolo);
-                    int aridad2 = (tabla->array[j]->aridad)-1; 
-                    if (!is_empty(stack))t1 = pop(&stack);
-                    else {
-                        printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
-                        destruir_stack(stack);
-                        return NULL;
-                    }
-                    if (aridad2) {
-                        if (!is_empty(stack))t2 = pop(&stack);
+            else {
+                int bandera = 0;
+                int j = 0;
+                char* simbolo = malloc(sizeof(char)*2);
+                while(!bandera && j < tabla->num_elementos) {
+                    sscanf(expr+i, "%c", simbolo);
+                    simbolo[1] = '\0';
+                    printf("Simbolo: %s\n", simbolo);
+                    // Estamos en el caso de un operador
+                    if (!strcmp(simbolo, tabla->array[j]->simbolo)) {
+                        t = crear_nodo(simbolo);
+                        int aridad2 = (tabla->array[j]->aridad)-1; 
+                        if (!is_empty(stack))t1 = pop(&stack);
                         else {
                             printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
                             destruir_stack(stack);
                             return NULL;
                         }
-                        t->izq = t2;
+                        if (aridad2) {
+                            if (!is_empty(stack))t2 = pop(&stack);
+                            else {
+                                printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
+                                destruir_stack(stack);
+                                return NULL;
+                            }
+                            t->izq = t2;
+                        }
+                        t->der = t1;
+                        push(&stack, t);
+                        bandera = 1;
                     }
-                    t->der = t1;
-                    push(&stack, t);
-                    bandera = 1;
+                    j++;
                 }
-                j++;
-            }
 
-            // Si no se trataba de un operador, se trata de un operando
-            if (!bandera) {
-                free(simbolo);
-                char* operando = malloc(sizeof(char)*10);
-                if (sscanf(expr+i, "%s", operando) == 1) {
-                    i+=strlen(operando);
-                    printf("Length del operando: %ld\n", strlen(operando));
-                    t = crear_nodo(operando);
-                    push(&stack, t);
-                }
-                else {
-                    printf("Hubo un error leyendo su expresión. Asegúrese de que la misma");
-                    printf("esté expresada en notación postfija y use los símbolos cargados.\n"); 
-                    destruir_stack(stack);
-                    return NULL;
+                // Si no se trataba de un operador, se trata de un operando
+                if (!bandera) {
+                    free(simbolo);
+                    char* operando = malloc(sizeof(char)*10);
+                    if (sscanf(expr+i, "%s", operando) == 1) {
+                        i+=strlen(operando);
+                        printf("Length del operando: %ld\n", strlen(operando));
+                        t = crear_nodo(operando);
+                        push(&stack, t);
+                    }
+                    else {
+                        printf("Hubo un error leyendo su expresión. Asegúrese de que la misma");
+                        printf("esté expresada en notación postfija y use los símbolos cargados.\n"); 
+                        destruir_stack(stack);
+                        return NULL;
+                    }
                 }
             }
         }
