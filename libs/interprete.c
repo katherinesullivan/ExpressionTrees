@@ -34,7 +34,13 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
         char* alias = malloc(sizeof(char)*MAX_ALIAS);
         if (chequeo_formato(sscanf(buffer+strlen(primera_palabra), "%s", alias), 1)) {
             Arbol arbol = tablahash_buscar(*dicc, alias, 0);
-            if (arbol) printf_infix(arbol);
+            if (arbol){
+                char* rdo = malloc(sizeof(char)*MAX_INPUT);
+                rdo[0] = '\0';
+                rdo = print_infix(arbol, tabla, rdo, 0, 0);
+                printf("La expresión es: %s\n", rdo);
+                free(rdo);
+            }
             else printf("No existe expresión para imprimir con ese alias\n");
         }
         printf("%s\n", alias);
@@ -236,8 +242,44 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
     return t;
 }
 
-void printf_infix(Arbol arbol) {
-    return;
+char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent, int prec_actual) {
+    /* Voy a realizar un recorrido inorder y ponerlo en una string 
+       pero teniendo en cuenta de poner paréntesis si tengo algo de
+       menor precedencia como hijo de algo con mayor precedencia. */
+
+    if (!arbol) return rdo;
+    
+    if (prec_parent > prec_actual) sprintf(rdo+strlen(rdo), "(");
+
+    // Caso Hoja 
+    if (!arbol->izq && !arbol->der) {
+        rdo = print_infix(arbol->izq, tabla, rdo, prec_parent, prec_actual);
+        sprintf(rdo+strlen(rdo), "%s", arbol->dato);
+        rdo = print_infix(arbol->der, tabla, rdo, prec_parent, prec_actual);
+    }
+    // Caso símbolo
+    else {
+        int i = 0;
+        int band = 1;
+        while (band && i<tabla->num_elementos) {
+            if (!strcmp(arbol->dato, tabla->array[i]->simbolo)) {
+                rdo = print_infix(arbol->izq, tabla, rdo, prec_actual, tabla->array[i]->precedencia);
+                sprintf(rdo+strlen(rdo), "%s", arbol->dato);
+                rdo = print_infix(arbol->der, tabla, rdo, prec_actual, tabla->array[i]->precedencia);
+                band = 0;
+            }
+            i++;
+        }
+        if (band) {
+            // No es una hoja pero no hay un símbolo
+            printf("Hubo un problema imprimiendo su impresión. Fijése haberla definido de manera correcta y de haber cargado todos los operadores correspondientes \n");
+            return NULL;
+        }
+    }
+
+    if (prec_parent > prec_actual) sprintf(rdo+strlen(rdo), ")");
+    
+    return rdo;
 }
 
 int resolver(Arbol arbol, TablaOps* tabla) {

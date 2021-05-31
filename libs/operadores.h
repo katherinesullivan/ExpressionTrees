@@ -9,6 +9,7 @@ typedef struct _NodoTablaOps {
     char* simbolo;
     int aridad;
     FuncionEvaluacion eval;
+    int precedencia;
     struct _NodoTablaOps* sig;
 } NodoTablaOps;
 
@@ -20,7 +21,7 @@ typedef struct _TablaOps {
 
 TablaOps* crear_tabla();
 
-void cargar_operador(TablaOps* tabla, char* simbolo, int aridad, FuncionEvaluacion eval);
+void cargar_operador(TablaOps* tabla, char* simbolo, int aridad, FuncionEvaluacion eval, int precedencia);
 
 void agrandar_tablaops (TablaOps* tabla);
 
