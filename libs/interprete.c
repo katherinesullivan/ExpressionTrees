@@ -37,7 +37,7 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
             if (arbol){
                 char* rdo = malloc(sizeof(char)*MAX_INPUT);
                 rdo[0] = '\0';
-                rdo = print_infix(arbol, tabla, rdo, 0, 0);
+                rdo = print_infix(arbol, tabla, rdo, 0);
                 printf("La expresión es: %s\n", rdo);
                 free(rdo);
             }
@@ -76,6 +76,7 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
     char* expr = malloc(sizeof(char)*(MAX_INPUT-MAX_ALIAS-10));
     if (chequeo_formato(sscanf(buffer+strlen(primera_palabra), " = cargar %[^\n]\n", expr), 1)) {
         printf("Todo piola por aca\n");
+        if (tablahash_buscar(*dicc, primera_palabra,1)) tablahash_eliminar(*dicc, primera_palabra);
         Arbol arbol = crear_expr_tree(expr, tabla);
         tablahash_insertar(*dicc, primera_palabra, arbol);
     }
@@ -242,20 +243,18 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
     return t;
 }
 
-char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent, int prec_actual) {
+char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent) {
     /* Voy a realizar un recorrido inorder y ponerlo en una string 
        pero teniendo en cuenta de poner paréntesis si tengo algo de
        menor precedencia como hijo de algo con mayor precedencia. */
 
     if (!arbol) return rdo;
-    
-    if (prec_parent > prec_actual) sprintf(rdo+strlen(rdo), "(");
 
     // Caso Hoja 
     if (!arbol->izq && !arbol->der) {
-        rdo = print_infix(arbol->izq, tabla, rdo, prec_parent, prec_actual);
+        rdo = print_infix(arbol->izq, tabla, rdo, prec_parent);
         sprintf(rdo+strlen(rdo), "%s", arbol->dato);
-        rdo = print_infix(arbol->der, tabla, rdo, prec_parent, prec_actual);
+        rdo = print_infix(arbol->der, tabla, rdo, prec_parent);
     }
     // Caso símbolo
     else {
@@ -263,10 +262,13 @@ char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent, int 
         int band = 1;
         while (band && i<tabla->num_elementos) {
             if (!strcmp(arbol->dato, tabla->array[i]->simbolo)) {
-                rdo = print_infix(arbol->izq, tabla, rdo, prec_actual, tabla->array[i]->precedencia);
+                printf("Soy %s y tengo precedencia %d\n", arbol->dato, tabla->array[i]->precedencia);
+                if (tabla->array[i]->precedencia < prec_parent) sprintf(rdo+strlen(rdo), "(");
+                rdo = print_infix(arbol->izq, tabla, rdo, tabla->array[i]->precedencia);
                 sprintf(rdo+strlen(rdo), "%s", arbol->dato);
-                rdo = print_infix(arbol->der, tabla, rdo, prec_actual, tabla->array[i]->precedencia);
+                rdo = print_infix(arbol->der, tabla, rdo, tabla->array[i]->precedencia);
                 band = 0;
+                if (tabla->array[i]->precedencia < prec_parent) sprintf(rdo+strlen(rdo), ")");
             }
             i++;
         }
@@ -277,7 +279,7 @@ char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent, int 
         }
     }
 
-    if (prec_parent > prec_actual) sprintf(rdo+strlen(rdo), ")");
+
     
     return rdo;
 }

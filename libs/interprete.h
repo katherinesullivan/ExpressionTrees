@@ -29,7 +29,7 @@ int is_empty(StackNode* top);
 
 void agregar_alias(TablaHash* dicc);
 
-char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent, int prec_actual); // tener en cuenta parentesis (van a ser segun el nivel y si son + -)
+char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent); // tener en cuenta parentesis (van a ser segun el nivel y si son + -)
 
 int resolver(Arbol arbol, TablaOps* tabla);
 
