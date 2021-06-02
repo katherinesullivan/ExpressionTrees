@@ -283,7 +283,7 @@ char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent) {
         }
         if (band) {
             // No es una hoja pero no hay un símbolo
-            printf("Hubo un problema imprimiendo su impresión. Fijése haberla definido de manera correcta y de haber cargado todos los operadores correspondientes \n");
+            printf("Hubo un problema imprimiendo su expresión. Fijése haberla definido de manera correcta y de haber cargado todos los operadores correspondientes \n");
             return NULL;
         }
     }
