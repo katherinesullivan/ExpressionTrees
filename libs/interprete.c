@@ -99,6 +99,7 @@ int chequeo_formato(int entered, int expected) {
 void destruir_stack(StackNode* top) {
     if (top != NULL) {
         destruir_stack(top->next);
+        arbol_destruir(top->t);
         free(top);
     }
 }
@@ -148,7 +149,7 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
     StackNode* stack = NULL;
     Arbol t, t1, t2;
 
-    for(int i = 0; i<strlen(expr); i++) {
+    for(unsigned int i = 0; i<strlen(expr); i++) {
         printf("expr[%d]: %c\n", i, expr[i]);
         // ver que no imprime bien
 
@@ -240,6 +241,14 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
     printf("-----Inorder tree traversal:-----\n");
     arbol_imprimir_inorder(t);
     printf("---------------------------------\n");
+    if (!is_empty(stack)) {
+        printf("No se pudo construir su árbol de expresión. Asegúrese de haber utilizado notación postfija y haber definido solo una expresión.\n");
+        t1 = pop(&stack);
+        arbol_destruir(t1);
+        destruir_stack(stack);
+        arbol_destruir(t);
+        return NULL;
+    }
     return t;
 }
 
@@ -322,7 +331,7 @@ int resolver(Arbol arbol, TablaOps* tabla) {
     return 0;
 }
 
-unsigned hash(char *s) {
+/*unsigned hash(char *s) {
     unsigned hashval;
     for (hashval = 0; *s != '\0'; s++)
       hashval = *s + 11 * hashval;
@@ -350,3 +359,4 @@ int main() {
     } while (flag);
     return 0;
 }
+*/
