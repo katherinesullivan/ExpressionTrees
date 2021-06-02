@@ -156,12 +156,10 @@ TablaHash *tablahash_agrandar(TablaHash *tabla) {
 /* Destruye la tabla. */
 void tablahash_destruir(TablaHash *tabla) {
   for (unsigned int i = 0; i < tabla->capacidad; i++) {
-    printf("%d\n", i);
     arbol_destruir(tabla->tabla[i].dato); // trabaja con NULL también
     if (tabla->tabla[i].estado != 2)
       free(tabla->tabla[i].clave);
   }
-  printf("Pude freear las claves\n");
   free(tabla->tabla);
   free(tabla);
 }

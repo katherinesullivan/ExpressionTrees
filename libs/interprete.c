@@ -17,22 +17,20 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
     primera_palabra[0] = '\0';
     sscanf(buffer, "%s ", primera_palabra);
 
+    // Nos fijamos cuál fue el comando ingresado 
+
     if (!strcmp(primera_palabra,"salir")) {
-        printf("Protocolo de salida\n");
         free(primera_palabra);
-        printf("Free1\n");
         tablahash_destruir(*dicc);
-        printf("Tablahash destruida\n");
         destruir_tablaops(tabla);
-        printf("TablaOps destruida\n");
         free(buffer);
-        printf("Free buffer\n");
         return 0;
     }
     
     if (!strcmp(primera_palabra,"imprimir")) {
         char* alias = malloc(sizeof(char)*MAX_ALIAS);
         if (chequeo_formato(sscanf(buffer+strlen(primera_palabra), "%s", alias), 1)) {
+            // Vemos si existe el alias especificado
             Arbol arbol = tablahash_buscar(*dicc, alias, 0);
             if (arbol){
                 char* rdo = malloc(sizeof(char)*MAX_INPUT);
@@ -43,9 +41,6 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
             }
             else printf("No existe expresión para imprimir con ese alias\n");
         }
-        printf("%s\n", alias);
-
-        printf("Imprimir: Chequeo que haya un alias, luego que ese alias este en el dicc, y luego ejecuto printf infix\n");
         free(primera_palabra);
         free(alias);
         return 1;
@@ -54,32 +49,30 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
     if (!strcmp(primera_palabra,"evaluar")) {
         char* alias = malloc(sizeof(char)*MAX_ALIAS);
         if (chequeo_formato(sscanf(buffer+strlen(primera_palabra), "%s", alias), 1)) {
+            // Vemos si existe una expresión con ese nombre
             Arbol arbol = tablahash_buscar(*dicc, alias, 0);
             if (arbol) {
+                // Tenemos un chequeo para ver si fue posible
+                // el cálculo de la expresuón
                 int* error = malloc(sizeof(int));
                 *error = 0;
                 int resultado = resolver(arbol, tabla, error);
-                if (error) printf("No se puede calcular una división por cero.\n");
+                if (*error) printf("No se puede calcular una división por cero.\n");
                 else printf("La expresión evalúa a %d\n", resultado);
                 free(error);
             }
             else printf("No existe expresión para resolver con ese alias\n");
         }
-        printf("%s\n", alias);
-
-
-        printf("Evaluar: Chequeo que haya un alias, luego que ese alias este en dicc, y luego ejecuto resolver\n");
         free(primera_palabra);
         free(alias);
         return 1;
     }
 
-    // Si la primer palabra del comando no fue igual a ninguna de las palabras claves, vamos a suponer que representa un alias
-    printf("El alias es %s. Voy a chequear que venga seguido por un igual usando el rdo de scanf que luego tenga un cargar y luego una expresión (podría ver que la expresión es válida) y luego cargo el alias con el dato armado al dicc\n", primera_palabra);
-    // SOLO NO ACA free palabra
+    // Si la primer palabra del comando no fue igual a ninguna de las palabras claves,
+    // vamos a suponer que representa un alias
     char* expr = malloc(sizeof(char)*(MAX_INPUT-MAX_ALIAS-10));
     if (chequeo_formato(sscanf(buffer+strlen(primera_palabra), " = cargar %[^\n]\n", expr), 1)) {
-        printf("Todo piola por aca\n");
+        // Si ya había una expresión con ese nombre la piso
         if (tablahash_buscar(*dicc, primera_palabra,1)) tablahash_eliminar(*dicc, primera_palabra);
         Arbol arbol = crear_expr_tree(expr, tabla);
         tablahash_insertar(*dicc, primera_palabra, arbol);
@@ -153,33 +146,13 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
     StackNode* stack = NULL;
     Arbol t, t1, t2;
 
+    // Recorremos los operandos y operadores de la expresión
+    // guardándolos en una pila 
     for(unsigned int i = 0; i<strlen(expr); i++) {
-        printf("expr[%d]: %c\n", i, expr[i]);
-        // ver que no imprime bien
 
-        if (expr[i] == ' ') {printf("Hola soy un espacio\n");}
+        if (expr[i] == ' ') {}
 
         else {
-            /*if (expr[i] == '-' && expr[i+1] == '-') {
-                // Caso distinguido operador especial --
-                i++; // para no leer el prox caracter
-                char* dato = malloc(sizeof(char)*3);
-                dato[0] = '-';
-                dato[1] = '-';
-                dato[2] = '\0';
-                t = crear_nodo(dato);
-                if (!is_empty(stack))t1 = pop(&stack);
-                else {
-                    printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
-                    destruir_stack(stack);
-                    return NULL;
-                }
-                t->der = t1;
-                t->izq = NULL;
-                push(&stack, t);
-            }*/
-
-            /*else {*/
             int bandera = 0;
             int j = 0;
             char* simbolo = malloc(sizeof(char)*MAX_OP);
@@ -187,8 +160,8 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                 int length = 0;
                 sscanf(expr+i, "%s%n", simbolo, &length);
                 simbolo[length] = '\0';
-                printf("Simbolo: %s Con length: %d\n", simbolo, length);
-                // Estamos en el caso de un operador
+
+                // Vemos si se trata de un operador
                 if (!strcmp(simbolo, tabla->array[j]->simbolo)) {
                     t = crear_nodo(simbolo);
                     int aridad2 = (tabla->array[j]->aridad)-1; 
@@ -227,7 +200,6 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                 char* operando = malloc(sizeof(char)*10);
                 if (sscanf(expr+i, "%s", operando) == 1) {
                     i+=strlen(operando);
-                    printf("Length del operando: %ld\n", strlen(operando));
                     t = crear_nodo(operando);
                     push(&stack, t);
                 }
@@ -238,7 +210,6 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                     return NULL;
                 }
             }
-            /*}*/
         }
     }
 
@@ -247,7 +218,9 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
     arbol_imprimir_inorder(t);
     printf("---------------------------------\n");*/
     if (!is_empty(stack)) {
-        printf("No se pudo construir su árbol de expresión. Asegúrese de haber utilizado notación postfija y haber definido solo una expresión.\n");
+        printf("No se pudo construir su árbol de expresión. ");
+        printf("Asegúrese de haber utilizado notación postfija y ");
+        printf("haber definido solo una expresión.\n");
         t1 = pop(&stack);
         arbol_destruir(t1);
         destruir_stack(stack);
@@ -264,19 +237,18 @@ char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent) {
 
     if (!arbol) return rdo;
 
-    // Caso Hoja 
+    // Caso operando
     if (!arbol->izq && !arbol->der) {
         rdo = print_infix(arbol->izq, tabla, rdo, prec_parent);
         sprintf(rdo+strlen(rdo), "%s", arbol->dato);
         rdo = print_infix(arbol->der, tabla, rdo, prec_parent);
     }
-    // Caso símbolo
+    // Caso operador
     else {
         int i = 0;
         int band = 1;
         while (band && i<tabla->num_elementos) {
             if (!strcmp(arbol->dato, tabla->array[i]->simbolo)) {
-                printf("Soy %s y tengo precedencia %d\n", arbol->dato, tabla->array[i]->precedencia);
                 if (tabla->array[i]->precedencia < prec_parent) sprintf(rdo+strlen(rdo), "(");
                 rdo = print_infix(arbol->izq, tabla, rdo, tabla->array[i]->precedencia);
                 sprintf(rdo+strlen(rdo), "%s", arbol->dato);
@@ -288,13 +260,12 @@ char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent) {
         }
         if (band) {
             // No es una hoja pero no hay un símbolo
-            printf("Hubo un problema imprimiendo su expresión. Fijése haberla definido de manera correcta y de haber cargado todos los operadores correspondientes \n");
+            printf("Hubo un problema imprimiendo su expresión. ");
+            printf("Fijése de haberla definido de manera correcta y de haber ");
+            printf("cargado todos los operadores correspondientes \n");
             return NULL;
         }
     }
-
-
-    
     return rdo;
 }
 
@@ -305,7 +276,8 @@ int resolver(Arbol arbol, TablaOps* tabla, int* error) {
     // Hoja 
     if ((!arbol->izq) && (!arbol->der)) return atoi(arbol->dato);
 
-    // Caso operador 
+    // Calculo los valores a derecha e izquierda para luego 
+    // obtener el resultado final
     int valor_izq = resolver(arbol->izq, tabla, error);
     int valor_der = resolver(arbol->der, tabla, error);
     int* args = malloc(sizeof(int)*2);
@@ -313,9 +285,12 @@ int resolver(Arbol arbol, TablaOps* tabla, int* error) {
     int i = 0;
     while(i<tabla->num_elementos) {
         if (!strcmp(arbol->dato, tabla->array[i]->simbolo)) {
-            if (!strcmp(arbol->dato,"/")) {
+            if (!strcmp(arbol->dato,"/") || !strcmp(arbol->dato,"%")) {
                 args[1] = valor_der;
                 if (args[1] == 0) {
+                    // Encontramos una división por cero,
+                    // único comportamiento no definido con
+                    // los operadores tradicionales.
                     *error = 1;
                     free(args);
                     return 1;
@@ -323,7 +298,7 @@ int resolver(Arbol arbol, TablaOps* tabla, int* error) {
             }
             if (tabla->array[i]->aridad == 1) {
                 args[0] = valor_der;
-                args[1] = valor_izq; // no va a ser usado 0
+                args[1] = valor_izq; // no va a ser usado
                 int rdo = tabla->array[i]->eval(args);
                 free(args);
                 return rdo;
@@ -339,37 +314,9 @@ int resolver(Arbol arbol, TablaOps* tabla, int* error) {
 
     // No se encontró el símbolo
     free(args);
-    printf("Hubo un problema evaluando su expresión. Fijése haberla definido de manera correcta y de haber cargado todos los operadores correspondientes\n");
+    printf("Hubo un problema evaluando su expresión. ");
+    printf("Fijése de haberla definido de manera correcta y de haber ");
+    printf("cargado todos los operadores correspondientes \n");
 
     return 0;
 }
-
-/*unsigned hash(char *s) {
-    unsigned hashval;
-    for (hashval = 0; *s != '\0'; s++)
-      hashval = *s + 11 * hashval;
-    return hashval;
-}
-
-unsigned hash2(char *s) {
-    unsigned hashval;
-    for (hashval = 0; *s != '\0'; s++)
-      hashval = *s + 13 * hashval; // no puede ser 31 si voy a arrancar con 31 pq necesito la coprimalidad (es decir su mcd -> 1) entre el hash2 y la cap de la tabla
-    return hashval;
-}
-
-int main() {
-    int flag = 1;
-    free(NULL);
-    printf("Size of arbol: %ld\n", sizeof(Arbol));
-    puts("hi!");
-    char* buffer = malloc(sizeof(char)*MAX_INPUT);
-    TablaHash* diccionario = tablahash_crear(31, hash, &hash2);
-    TablaOps* tablaops = crear_tabla();
-    cargar_operadores_tradicionales(tablaops);
-    do {
-        flag = interpretar(tablaops, &diccionario, buffer);
-    } while (flag);
-    return 0;
-}
-*/

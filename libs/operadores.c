@@ -88,20 +88,3 @@ void destruir_tablaops (TablaOps* tabla) {
     free(tabla->array);
     free(tabla);
 }
-
-/*int main () {
-    printf("%%%%\n"); // 2 %
-    char* c = malloc(sizeof(char)*3);
-    scanf("%s", c);
-    printf("%s\n", c);
-    if (strcmp(c,"%") == 0) {
-        printf("yes\n");
-    }
-    free(c);
-    TablaOps* tabla = crear_tabla();
-    cargar_operadores_tradicionales(tabla);
-    imprimir_tablaops(tabla);
-    printf("Dos^Tres: %d\n", 2^3);
-    destruir_tablaops(tabla);
-    return 0;
-}*/

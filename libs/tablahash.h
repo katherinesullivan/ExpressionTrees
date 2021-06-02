@@ -4,7 +4,9 @@
 #include <stddef.h>
 #include <stdio.h>
 
-/* Estructura para el tipo de dato de la casilla hash */
+/**
+ *  Estructura para el tipo de dato de la casilla hash. 
+ * */
 typedef struct _NodoArbol {
   char* dato;
   struct _NodoArbol* der;
@@ -13,10 +15,19 @@ typedef struct _NodoArbol {
 
 typedef NodoArbol* Arbol;
 
+/**
+ * Crea un nodo de Arbol.
+*/
 Arbol crear_nodo(char* dato);
 
+/**
+ *  Función útil para hacer un recorrido inorder tradicional.
+ */
 void arbol_imprimir_inorder(Arbol arbol);
 
+/**
+ * Función que destruye un elemento de la estructura Arbol.
+ */ 
 void arbol_destruir(Arbol arbol);
 
 /**
