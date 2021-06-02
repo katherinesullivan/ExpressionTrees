@@ -190,7 +190,8 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                     int aridad2 = (tabla->array[j]->aridad)-1; 
                     if (!is_empty(stack))t1 = pop(&stack);
                     else {
-                        printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
+                        printf("Operador mal posicionado. "); 
+                        printf("Asegúrese que su expresión esté en notación postfija\n");
                         arbol_destruir(t);
                         destruir_stack(stack);
                         return NULL;
@@ -199,7 +200,8 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
                     if (aridad2) {
                         if (!is_empty(stack))t2 = pop(&stack);
                         else {
-                            printf("Operador mal posicionado. Asegúrese que su expresión esté en notación postfija\n");
+                            printf("Operador mal posicionado. ");
+                            printf("Asegúrese que su expresión esté en notación postfija\n");
                             arbol_destruir(t);
                             destruir_stack(stack);
                             return NULL;
