@@ -11,6 +11,7 @@
 \usepackage{fancyhdr}
 \usepackage{nameref}
 \usepackage{wrapfig}
+\usepackage{hyperref}
 
 % for C
 \usepackage{xcolor}
@@ -94,7 +95,7 @@
         \noindent\large 2021
     \end{center}
 \end{titlepage}
-\ \par
+\
 
 \section{Dificultades encontradas}
 
@@ -124,6 +125,58 @@ typedef struct {
 
 Nota: Si bien entiendo que para este momento de la cursada no vieron tablas de hash me pareci\'o la mejor estructura para utilizar. Esto mismo se podría implementar con una lista enlazada o \'arbol pero los costos de inserci\'on, eliminaci\'on y b\'usqueda se elevar\'ian notablemente. 
 
-\subsection{Creaci\'on del \'arbol de expresi\'on}
-Para la creaci\'on del \'arbol de expresi\'on se 
+\subsection{Manejo de errores en la creaci\'on del \'arbol de expresi\'on}
+Resulto problem\'atico el manejo de los distintos errores que podr\'ia tener la creaci\'on del \'arbol puesto que este pod\'ia ersultar mal estructurado o incompleto y perder memoria, si no se respetaba bien la notaci\'on postfija o la aridad de los operadores. Para resolver esto se decide la no creaci\'on del \'arbol y liberaci\'on de memoria cuando se notase que: 
+
+\begin{itemize}
+    \item por la aridad de un operador encontrado se necesitase extraer de la pila que contiene los nodos y no fuese posible, o que
+    \item luego de haber completado la creaci\'on del \'arbol quedasen en la pila elementos (el \'arbol no est\'a debidamente unido).
+\end{itemize}
+
+\subsection{Impresi\'on con par\'entesis}
+Para resolver la impresi\'on con la menor cantidad de par\'entesis posible se decidi\'o agregar un par\'ametro m\'as a la estructura de operador (nodo de la tabla de operadores), quedando la estructura como se muestra a continuaci\'on: 
+
+\begin{lstlisting}[style = CStyle]
+typedef struct _NodoTablaOps {
+  char* simbolo;
+  int aridad;
+  FuncionEvaluacion eval;
+  int precedencia;
+  struct _NodoTablaOps* sig;
+} NodoTablaOps;
+\end{lstlisting}
+
+Luego para imprimir los par\'entesis lo que la funci\'on asignada para la tarea realiza es, una vez encontrado un operador, comparar su precedencia con la del operador anterior, y si tiene menor precedencia imprime par\'entesis.  
+
+\section{Compilaci\'on y uso del programa}
+
+Para la compilaci\'on del programa la entrega cuenta con un archivo Makefile. Una vez ejecutado el comando make, se puede empezar a ejecutar el programa con el comando ./main. 
+
+Para el uso del programa se cuenta con 4 comandos principales: 
+
+\begin{itemize}
+    \item ALIAS = cargar EXPR: esta estructura de comando nos permite asignarle un nombre ALIAS a una expresi\'on EXPR. La expresi\'on debe cumplir con la notaci\'on postfija y con el formato de dejar un espacio cada vez que se escribe un operador o un operando. 
+    \item imprimir ALIAS: imprime la expresi\'on con nombre ALIAS en notaci\'on infija con los parent\'esis necesarios. 
+    \item evaluar ALIAS: devuelve el resultado de la expresi\'on con nombre ALIAS. 
+    \item salir: cierra el programa. 
+\end{itemize}
+
+Tener en cuenta que los espacios explicitados se deben respetar. 
+
+\section{Bibliograf\'ia}
+
+\subsection{Obras consultadas}
+\begin{itemize}
+    \item Brassard, G. - Bratley, P. (1997) \emph{Fundamentos de la Algoritmia}.
+    \item Kumar, V. (2019) \emph{On the prerequisite of Coprimes in Double Hashing}.
+    \item Tenebaum, A. - Augenstein, M. - Langsam, Y. (1993) \emph{Estructuras de Datos con C}.
+\end{itemize}
+
+\subsection{Enlaces de inter\'es}
+\begin{itemize}
+    \item \href{https://www.geeksforgeeks.org/expression-tree/}{https://www.geeksforgeeks.org/expression-tree/}
+    \item \href{https://www.geeksforgeeks.org/evaluation-of-expression-tree/}{https://www.geeksforgeeks.org/evaluation-of-expression-tree/}
+    \item \href{https://www.shorturl.at/asuyI}{https://www.shorturl.at/asuyI}
+\end{itemize}
+
 \end{document}
