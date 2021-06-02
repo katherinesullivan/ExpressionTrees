@@ -9,7 +9,7 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer);
 
 TablaHash* crear_dicc_alias();
 
-Arbol crear_expr_tree(char* expr, TablaOps* tabla); // ver https://www.geeksforgeeks.org/expression-tree/
+Arbol crear_expr_tree(char* expr, TablaOps* tabla);
 
 /* Para la implementación de crear_expr_tree necesitaremos una pila */
 // Estructura de un nodo perteneciente a una pila. 

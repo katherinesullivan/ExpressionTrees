@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <math.h> // acordate de incluir -lm
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include "operadores.h"

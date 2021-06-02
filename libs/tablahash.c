@@ -13,11 +13,10 @@ Arbol crear_nodo(char* dato) {
 }
 
 void arbol_destruir(Arbol arbol) {
-  // might be uninitialised the one i'm passing
   if (arbol != NULL){
     arbol_destruir(arbol->izq);
     arbol_destruir(arbol->der);
-    free(arbol->dato); // aca problema
+    free(arbol->dato);
     free(arbol);
   }
 
@@ -165,16 +164,4 @@ void tablahash_destruir(TablaHash *tabla) {
   printf("Pude freear las claves\n");
   free(tabla->tabla);
   free(tabla);
-}
-
-// Modificar pretty print haciendo un pretty print del arbol 
-void prettyprint_th(TablaHash* th) {
-  printf("--- TABLA HASH (%u elemento%s) ---\n", th->numElems, (th->numElems == 1) ? "" : "s");
-  for (unsigned int i = 0; i < th->capacidad; i++) {
-    if (th->tabla[i].clave == NULL || (th->tabla[i].estado == 2)) puts("NULL");
-    else {
-      printf("%s: %d\n", th->tabla[i].clave, (*(int *)th->tabla[i].dato));
-    }
-  }
-  printf("-------------------------------%s%s\n", (th->numElems == 1) ? "" : "-", (th->numElems > 9) ? "-" : "");
 }
