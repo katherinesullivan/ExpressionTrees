@@ -56,8 +56,12 @@ int interpretar(TablaOps* tabla, TablaHash** dicc, char* buffer) {
         if (chequeo_formato(sscanf(buffer+strlen(primera_palabra), "%s", alias), 1)) {
             Arbol arbol = tablahash_buscar(*dicc, alias, 0);
             if (arbol) {
-                resolver(arbol, tabla);
-                printf("La expresión evalúa a %d\n", resolver(arbol, tabla));
+                int* error = malloc(sizeof(int));
+                *error = 0;
+                int resultado = resolver(arbol, tabla, error);
+                if (error) printf("No se puede calcular una división por cero.\n");
+                else printf("La expresión evalúa a %d\n", resultado);
+                free(error);
             }
             else printf("No existe expresión para resolver con ese alias\n");
         }
@@ -238,11 +242,10 @@ Arbol crear_expr_tree(char* expr, TablaOps* tabla) {
         }
     }
 
-    // Creo que queda vacia con esto la stack pero habría que ver
     t = pop(&stack);
-    printf("-----Inorder tree traversal:-----\n");
+    /*printf("-----Inorder tree traversal:-----\n");
     arbol_imprimir_inorder(t);
-    printf("---------------------------------\n");
+    printf("---------------------------------\n");*/
     if (!is_empty(stack)) {
         printf("No se pudo construir su árbol de expresión. Asegúrese de haber utilizado notación postfija y haber definido solo una expresión.\n");
         t1 = pop(&stack);
@@ -295,7 +298,7 @@ char* print_infix(Arbol arbol, TablaOps* tabla, char* rdo, int prec_parent) {
     return rdo;
 }
 
-int resolver(Arbol arbol, TablaOps* tabla) {
+int resolver(Arbol arbol, TablaOps* tabla, int* error) {
     // Árbol vacío  
     if (!arbol) return 0;
 
@@ -303,13 +306,21 @@ int resolver(Arbol arbol, TablaOps* tabla) {
     if ((!arbol->izq) && (!arbol->der)) return atoi(arbol->dato);
 
     // Caso operador 
-    int valor_izq = resolver(arbol->izq, tabla);
-    int valor_der = resolver(arbol->der, tabla);
+    int valor_izq = resolver(arbol->izq, tabla, error);
+    int valor_der = resolver(arbol->der, tabla, error);
     int* args = malloc(sizeof(int)*2);
 
     int i = 0;
     while(i<tabla->num_elementos) {
         if (!strcmp(arbol->dato, tabla->array[i]->simbolo)) {
+            if (!strcmp(arbol->dato,"/")) {
+                args[1] = valor_der;
+                if (args[1] == 0) {
+                    *error = 1;
+                    free(args);
+                    return 1;
+                }
+            }
             if (tabla->array[i]->aridad == 1) {
                 args[0] = valor_der;
                 args[1] = valor_izq; // no va a ser usado 0
