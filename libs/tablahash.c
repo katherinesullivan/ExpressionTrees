@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Funciones elacionadas a los árboles */
+/* Funciones relacionadas a los árboles */
 Arbol crear_nodo(char *dato) {
   Arbol arbol = malloc(sizeof(NodoArbol));
 
@@ -79,7 +79,7 @@ void tablahash_insertar(TablaHash * tabla, char *clave, Arbol dato) {
   }
 }
 
-/* Busca el conjunto en la tabla asociado a la clave dada. 
+/* Busca el dato en la tabla asociado a la clave dada. 
 Si solover es 0, en caso de que esté presente devuelve un puntero al mismo, 
 en caso contrario devuelve NULL. Si solover es 1, devuelve NULL si no está 
 presente, y un puntero a su clave si lo está. */
@@ -99,7 +99,6 @@ void *tablahash_buscar(TablaHash * tabla, char *clave, int solover) {
       done = 1;
       if (solover) {
         return tabla->tabla[idx].clave;
-        // para que no sea NULL si el cjto es vacío
       }
       return tabla->tabla[idx].dato;
     }

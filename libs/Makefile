@@ -6,19 +6,22 @@ INTERPRETE = interprete.c
 TABLAHASH = tablahash.c
 FLAGS = -Wall -Wextra -Werror
 
-# Ejecutable de la implementación del Juego.
+.PHONY : all
+all: main clean
+
+# Ejecutable de la implementación del programa.
 main: main.c $(INTERPRETE:.c=.o) $(TABLAHASH:.c=.o) $(OPERADORES:.c=.o)
 	$(CC) $(FLAGS) -o $@ $^ -lm
 
-# Archivo objeto de la implementación de TABLAHASH.
+# Archivo objeto de la implementación de la tabla hash.
 $(TABLAHASH:.c=.o) : $(TABLAHASH) $(TABLAHASH:.c=.h)
 	$(CC) $(FLAGS) -c $(TABLAHASH)
 
-# Archivo objeto de la implementación de Tableros.
+# Archivo objeto de la implementación de los operadores.
 $(OPERADORES:.c=.o) : $(OPERADORES) $(OPERADORES:.c=.h)
 	$(CC) $(FLAGS) -c $(OPERADORES)
 
-# Archivo objeto de la implementación del Juego.
+# Archivo objeto de la implementación del intérprete.
 $(INTERPRETE:.c=.o) : $(INTERPRETE) $(INTERPRETE:.c=.h) $(OPERADORES:.c=.h) $(TABLAHASH:.c=.h)
 	$(CC) $(FLAGS) -c $(INTERPRETE)
 

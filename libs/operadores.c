@@ -16,12 +16,13 @@ TablaOps *crear_tabla() {
 }
 
 void cargar_operador(TablaOps * tabla, char *simbolo, int aridad,
-                     FuncionEvaluacion eval, int prec) {
+                     FuncionEvaluacion eval, int prec, int asoc) {
   NodoTablaOps *nuevo_nodo = malloc(sizeof(NodoTablaOps));
   nuevo_nodo->simbolo = simbolo;
   nuevo_nodo->aridad = aridad;
   nuevo_nodo->eval = eval;
   nuevo_nodo->precedencia = prec;
+  nuevo_nodo->asoc = asoc;
 
   tabla->array[tabla->num_elementos] = nuevo_nodo;
   tabla->num_elementos++;
@@ -61,13 +62,13 @@ int potencia(int *args) {
 }
 
 void cargar_operadores_tradicionales(TablaOps * tabla) {
-  cargar_operador(tabla, "+", 2, suma, 0);
-  cargar_operador(tabla, "-", 2, resta, 0);
-  cargar_operador(tabla, "--", 1, opuesto, 3);
-  cargar_operador(tabla, "*", 2, producto, 1);
-  cargar_operador(tabla, "/", 2, division, 1);
-  cargar_operador(tabla, "%", 2, modulo, 1);
-  cargar_operador(tabla, "^", 2, potencia, 2);
+  cargar_operador(tabla, "+", 2, suma, 0, 1);
+  cargar_operador(tabla, "-", 2, resta, 0, 0);
+  cargar_operador(tabla, "--", 1, opuesto, 2, 0);
+  cargar_operador(tabla, "*", 2, producto, 1, 1);
+  cargar_operador(tabla, "/", 2, division, 1, 0);
+  cargar_operador(tabla, "%", 2, modulo, 1, 0);
+  cargar_operador(tabla, "^", 2, potencia, 3, 0);
 }
 
 void imprimir_tablaops(TablaOps * tabla) {

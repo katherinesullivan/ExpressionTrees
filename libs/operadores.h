@@ -12,6 +12,7 @@ typedef struct _NodoTablaOps {
   int aridad;
   FuncionEvaluacion eval;
   int precedencia;
+  int asoc;
   struct _NodoTablaOps *sig;
 } NodoTablaOps;
 
@@ -27,7 +28,7 @@ TablaOps *crear_tabla();
 
 /* Función provista para cargar operadores individulamente a la tabla */
 void cargar_operador(TablaOps * tabla, char *simbolo, int aridad,
-                     FuncionEvaluacion eval, int precedencia);
+                     FuncionEvaluacion eval, int precedencia, int asoc);
 
 /* Función que permite aumentar la capacidad de la tabla de operadores */
 void agrandar_tablaops(TablaOps * tabla);

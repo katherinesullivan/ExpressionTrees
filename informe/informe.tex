@@ -105,11 +105,11 @@ A continuaci\'on se muestra su estructura y dentro del archivo tablahash.c se pu
 
 \begin{lstlisting}[style = CStyle]
 typedef struct {
-    CasillaHash* tabla;
-    unsigned numElems;
-    unsigned capacidad;
-    FuncionHash hash;
-    FuncionHash hash2;
+  CasillaHash* tabla;
+  unsigned numElems;
+  unsigned capacidad;
+  FuncionHash hash;
+  FuncionHash hash2;
 } TablaHash;
 \end{lstlisting}
 
@@ -129,12 +129,12 @@ Nota: Si bien entiendo que para este momento de la cursada no vieron tablas de h
 Resulto problem\'atico el manejo de los distintos errores que podr\'ia tener la creaci\'on del \'arbol puesto que este pod\'ia ersultar mal estructurado o incompleto y perder memoria, si no se respetaba bien la notaci\'on postfija o la aridad de los operadores. Para resolver esto se decide la no creaci\'on del \'arbol y liberaci\'on de memoria cuando se notase que: 
 
 \begin{itemize}
-    \item por la aridad de un operador encontrado se necesitase extraer de la pila que contiene los nodos y no fuese posible, o que
+    \item por la aridad de un operador encontrado se necesitase extraer un nodo de la pila y no fuese posible, o que
     \item luego de haber completado la creaci\'on del \'arbol quedasen en la pila elementos (el \'arbol no est\'a debidamente unido).
 \end{itemize}
 
 \subsection{Impresi\'on con par\'entesis}
-Para resolver la impresi\'on con la menor cantidad de par\'entesis posible se decidi\'o agregar un par\'ametro m\'as a la estructura de operador (nodo de la tabla de operadores), quedando la estructura como se muestra a continuaci\'on: 
+Para resolver la impresi\'on con la menor cantidad de par\'entesis posible se decidi\'o agregar dos par\'ametros m\'as a la estructura de operador (nodo de la tabla de operadores), quedando la estructura como se muestra a continuaci\'on: 
 
 \begin{lstlisting}[style = CStyle]
 typedef struct _NodoTablaOps {
@@ -142,11 +142,19 @@ typedef struct _NodoTablaOps {
   int aridad;
   FuncionEvaluacion eval;
   int precedencia;
+  int asoc;
   struct _NodoTablaOps* sig;
 } NodoTablaOps;
 \end{lstlisting}
 
-Luego para imprimir los par\'entesis lo que la funci\'on asignada para la tarea realiza es, una vez encontrado un operador, comparar su precedencia con la del operador anterior, y si tiene menor precedencia imprime par\'entesis.  
+Luego para imprimir los par\'entesis lo que la funci\'on asignada para la tarea realiza es, una vez encontrado un operador, comparar su precedencia con la del operador anterior, y si tiene menor precedencia o igual precedencia siendo un operador no asociativo, imprime par\'entesis.  
+
+\vspace{20mm}
+
+\subsection{Operaciones ilegales - divisi\'on por cero}
+A fin de evitar errores que cortar\'ian la ejecución, el programa maneja el comportamiento de la divisi\'on por cero en la evaluaci\'on de una expresi\'on evitando hacer su c\'alculo e imprimiendo un error. 
+
+Para lograr este efecto, la funci\'on encargada de obtener el resultado de una expresi\'on lleva como argumento un puntero a entero que funciona como una bandera. Si se encuentra con una divisi\'on (o m\'odulo) por cero, prende esta bandera y devuelve un valor arbitrario. Para darle el resultado al usuario la funci\'on interpretar primero verfica que no haya habido un error. En caso de haber sucedido, simplemente imprime un mensaje que lo comunica.
 
 \section{Compilaci\'on y uso del programa}
 

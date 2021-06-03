@@ -41,7 +41,7 @@ typedef unsigned (*FuncionHash) (char *clave);
 typedef struct {
   char *clave;
   Arbol dato;
-  int estado;                   // será 0 si esta libre, 1 si está ocupada, 2 si está eliminada
+  int estado;   // será 0 si esta libre, 1 si está ocupada, 2 si está eliminada
 } CasillaHash;
 
 /*
@@ -56,7 +56,7 @@ typedef struct {
 } TablaHash;
 
 /*
- * Crea una nueva tabla Hash vacía con la capacidad dada.
+ * Crea una nueva tabla hash vacía con la capacidad dada.
  */
 TablaHash *tablahash_crear(unsigned capacidad, FuncionHash hash,
                            FuncionHash hash2);
@@ -67,7 +67,7 @@ TablaHash *tablahash_crear(unsigned capacidad, FuncionHash hash,
 void tablahash_insertar(TablaHash * tabla, char *clave, Arbol dato);
 
 /*
- * Busca el conjunto en la tabla asociado a la clave dada.
+ * Busca el dato en la tabla asociado a la clave dada.
  * Si solo ver es 0, en caso de que esté presente devuelve un puntero al mismo, 
  * en caso contrario devuelve NULL.
  * Si solover es 1, devuelve NULL si no está presente, y un puntero
@@ -90,7 +90,5 @@ TablaHash *tablahash_agrandar(TablaHash * tabla);
  * Destruye la tabla.
  */
 void tablahash_destruir(TablaHash * tabla);
-
-void prettyprint_th(TablaHash * th);
 
 #endif                          /* __TABLAHASH_H__ */

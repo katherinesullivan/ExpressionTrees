@@ -5,7 +5,7 @@
 
 #define MAX_INPUT 99
 #define MAX_ALIAS 32
-#define MAX_OP 3
+#define MAX_OP 9   // máxima longitud que puede tomar un operador u operando
 
 int interpretar(TablaOps * tabla, TablaHash ** dicc, char *buffer) {
   printf("> ");
@@ -71,7 +71,7 @@ int interpretar(TablaOps * tabla, TablaHash ** dicc, char *buffer) {
     free(alias);
     return 1;
   }
-  
+
   // Si la primer palabra del comando no fue igual a ninguna de las palabras claves,
   // vamos a suponer que representa un alias
   char *expr = malloc(sizeof(char) * (MAX_INPUT - MAX_ALIAS - 10));
@@ -161,7 +161,7 @@ Arbol crear_expr_tree(char *expr, TablaOps * tabla) {
     else {
       int bandera = 0;
       int j = 0;
-      char *simbolo = malloc(sizeof(char) * MAX_OP);
+      char *simbolo = malloc(sizeof(char) * MAX_OP + 1);
       while (!bandera && j < tabla->num_elementos) {
         int length = 0;
         sscanf(expr + i, "%s%n", simbolo, &length);
@@ -243,8 +243,9 @@ Arbol crear_expr_tree(char *expr, TablaOps * tabla) {
 
 char *print_infix(Arbol arbol, TablaOps * tabla, char *rdo, int prec_parent) {
   /* Voy a realizar un recorrido inorder y ponerlo en una string 
-     pero teniendo en cuenta de poner paréntesis si tengo algo de
-     menor precedencia como hijo de algo con mayor precedencia. */
+     pero teniendo en cuenta de poner paréntesis si tengo un operador de
+     menor precencia que su padre o de igual precedencia siendo un operador 
+     no asociativo */
 
   if (!arbol)
     return rdo;
@@ -261,19 +262,22 @@ char *print_infix(Arbol arbol, TablaOps * tabla, char *rdo, int prec_parent) {
     int band = 1;
     while (band && i < tabla->num_elementos) {
       if (!strcmp(arbol->dato, tabla->array[i]->simbolo)) {
-        if (tabla->array[i]->precedencia < prec_parent)
+        int par = tabla->array[i]->precedencia < prec_parent
+            || (tabla->array[i]->precedencia == prec_parent
+                && !tabla->array[i]->asoc);
+        if (par)
           sprintf(rdo + strlen(rdo), "(");
         rdo = print_infix(arbol->izq, tabla, rdo, tabla->array[i]->precedencia);
         sprintf(rdo + strlen(rdo), "%s", arbol->dato);
         rdo = print_infix(arbol->der, tabla, rdo, tabla->array[i]->precedencia);
         band = 0;
-        if (tabla->array[i]->precedencia < prec_parent)
+        if (par)
           sprintf(rdo + strlen(rdo), ")");
       }
       i++;
     }
     if (band) {
-      // No es una hoja pero no hay un símbolo
+      // No es una hoja pero no hay un operador
       printf("Hubo un problema imprimiendo su expresión. ");
       printf("Fijése de haberla definido de manera correcta y de haber ");
       printf("cargado todos los operadores correspondientes \n");
