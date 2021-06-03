@@ -126,7 +126,7 @@ typedef struct {
 Nota: Si bien entiendo que para este momento de la cursada no vieron tablas de hash me pareci\'o la mejor estructura para utilizar. Esto mismo se podría implementar con una lista enlazada o \'arbol pero los costos de inserci\'on, eliminaci\'on y b\'usqueda se elevar\'ian notablemente. 
 
 \subsection{Manejo de errores en la creaci\'on del \'arbol de expresi\'on}
-Resulto problem\'atico el manejo de los distintos errores que podr\'ia tener la creaci\'on del \'arbol puesto que este pod\'ia ersultar mal estructurado o incompleto y perder memoria, si no se respetaba bien la notaci\'on postfija o la aridad de los operadores. Para resolver esto se decide la no creaci\'on del \'arbol y liberaci\'on de memoria cuando se notase que: 
+Resulto problem\'atico el manejo de los distintos errores que podr\'ia tener la creaci\'on del \'arbol puesto que este pod\'ia ersultar mal estructurado o incompleto y perder memoria si no se respetase bien la notaci\'on postfija o la aridad de los operadores. Para resolver esto se decide la no creaci\'on del \'arbol y liberaci\'on de memoria cuando se notase que: 
 
 \begin{itemize}
     \item por la aridad de un operador encontrado se necesitase extraer un nodo de la pila y no fuese posible, o que
